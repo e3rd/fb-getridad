@@ -1,1 +1,1 @@
-Akorát jsem si zapomnlě vypnout adblock. Nepoužívám.
+Removes sponsored and suggested content. Release your wall from imposed content.

@@ -1,5 +1,10 @@
 {
   "manifest_version": 2,
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "fb-getridadd@edvard.cz"
+    }
+  },
   "content_security_policy": "script-src 'self'; object-src 'self'",
   "permissions": [
     "activeTab"
@@ -15,10 +20,10 @@
       ]
     }
   ],
-  "version": "0.2",
-  "name": "Facebook getridad",
-  "description": "Make facebook a better place",
+  "version": "0.2.3",
+  "name": "fb-getridad",
+  "description": "Release the wall from imposed content",
   "icons": {
-    "48": "48x48.png"
+    "16": "48x48.png"
   }
 }
