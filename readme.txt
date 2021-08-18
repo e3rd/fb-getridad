@@ -1,1 +1,0 @@
-Removes sponsored and suggested content. Release your wall from imposed content.
