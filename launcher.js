@@ -5,7 +5,7 @@ const LANG = {
     "en": {
         "Sponsored": "Sponsored",
         "Sponsored · Paid for by": "Sponsored · Paid for by",
-        "Suggested for You": "Suggested for You"
+        "Suggested for you": "Suggested for you"
     },
     "cs": {
         "Sponsored": "Sponzorováno",
@@ -13,8 +13,8 @@ const LANG = {
         "Suggested for You": "Návrhy pro vás"
     }
 }
-const shibboleth = document.querySelector("input[type=search]").getAttribute("placeholder")
-const lang = LANG[shibboleth === "Hledejte na Facebooku" ? "cs" : "en"]
+const debug = false
+let lang = null
 
 /**
  * Check if the given node should be removed
@@ -22,12 +22,14 @@ const lang = LANG[shibboleth === "Hledejte na Facebooku" ? "cs" : "en"]
  * @return {boolean}
  */
 const is_garbage = n => {
-    if (n.tagName === "B" && n.textContent.replaceAll("-", "") === lang["Sponsored"]) { // "Sposored"
+    if (n.tagName === "A" && n.getAttribute("aria-label") === "Sponsored") {
+        return true
+    } else if (n.tagName === "B" && n.textContent.replaceAll("-", "") === lang["Sponsored"]) { // "Sponsored"
         return true
     } else if (n.textContent.startsWith(lang["Sponsored · Paid for by"])) {
         return true
     } else if (!n.children.length) {
-        if (n.textContent === lang["Suggested for You"]) {
+        if (n.textContent === lang["Suggested for you"]) {
             return true
         }
     }
@@ -45,7 +47,9 @@ const is_garbage = n => {
  */
 function check_garbage(node) {
     const is = is_garbage(node)
-    // console.log('Checking: ', node, is);
+    if (debug) {
+        console.log('[fb-getridad] Checking: ', node, is);
+    }
     if (is) {
         node.style.opacity = "0.2"
         node.style["margin-left"] = "50px"
@@ -72,8 +76,28 @@ const observer = new MutationObserver((records) => {
     })
 })
 
+
+function fetch_language() {
+    const el = document.querySelector("input[type=search]")
+    return el && el.getAttribute("placeholder")
+}
+
+function main() {
+    const shibboleth = fetch_language()
+    lang = LANG[shibboleth === "Hledejte na Facebooku" ? "cs" : "en"]
+    if (debug) {
+        console.log("[fb-getridad] Lang: ", lang)
+    }
+
 // Start listening for new elements
-observer.observe(document.body, {childList: true, subtree: true})
+    observer.observe(document.body, {childList: true, subtree: true})
 
 // Process initial elements
-Array.from(document.querySelectorAll("data-pagelet")).filter(check_garbage)
+    Array.from(document.querySelectorAll("data-pagelet")).filter(check_garbage)
+}
+
+function check_start() {
+    setTimeout(() => fetch_language() && main() || check_start(), 100)
+}
+
+check_start()
