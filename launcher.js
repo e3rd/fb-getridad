@@ -22,7 +22,7 @@ let lang = null
  * @return {boolean}
  */
 const is_garbage = n => {
-    if (n.tagName === "A" && n.getAttribute("aria-label") === "Sponsored") {
+    if (n.tagName === "SPAN" && n.style.top === '3em' && Array.from(n.parentElement.querySelectorAll('span')).filter(s => s.style.top !== '3em').map(s => s.textContent).join("") === lang["Sponsored"].slice(1)) {
         return true
     } else if (n.tagName === "B" && n.textContent.replaceAll("-", "") === lang["Sponsored"]) { // "Sponsored"
         return true
@@ -45,7 +45,7 @@ const is_garbage = n => {
  * Make given node invisible if evaluated as garbage
  * @param node
  */
-function check_garbage(node) {
+function check_garbage(node) {        
     const is = is_garbage(node)
     if (debug) {
         console.log('[fb-getridad] Checking: ', node, is);
@@ -55,7 +55,7 @@ function check_garbage(node) {
         node.style["margin-left"] = "50px"
         node.style.height = "150px"
         node.style["overflow-y"] = "scroll"
-    }
+    }    
 }
 
 /**
@@ -72,7 +72,7 @@ const observer = new MutationObserver((records) => {
                 }
                 return n.hasAttribute("data-pagelet");
             })
-            .filter(check_garbage)
+            .map(check_garbage)
     })
 })
 
@@ -96,8 +96,4 @@ function main() {
     Array.from(document.querySelectorAll("data-pagelet")).filter(check_garbage)
 }
 
-function check_start() {
-    setTimeout(() => fetch_language() && main() || check_start(), 100)
-}
-
-check_start()
+setTimeout(() =>  main(), 500)
