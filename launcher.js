@@ -22,7 +22,7 @@ let lang = null
  * @return {boolean}
  */
 const is_garbage = n => {
-    if (n.tagName === "SPAN" && n.style.top === '3em' && Array.from(n.parentElement.querySelectorAll('span')).filter(s => s.style.top !== '3em').map(s => s.textContent).join("") === lang["Sponsored"].slice(1)) {
+    if ([lang["Sponsored"].slice(1), lang["Sponsored"]].includes(n.tagName === "SPAN" && n.style.top === '3em' && Array.from(n.parentElement.querySelectorAll('span')).filter(s => s.style.top !== '3em').map(s => s.textContent).join(""))) {
         return true
     } else if (n.tagName === "B" && n.textContent.replaceAll("-", "") === lang["Sponsored"]) { // "Sponsored"
         return true
