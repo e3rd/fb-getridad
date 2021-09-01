@@ -10,8 +10,8 @@ const LANG = {
     "cs": {
         "Sponsored": "Sponzorováno",
         "Sponsored · Paid for by": "Sponzorováno · Platí",
-        "Suggested for You": "Návrhy pro vás"
-    }
+        "Suggested for you": "Návrhy pro vás"
+    }    
 }
 const debug = false
 let lang = null
