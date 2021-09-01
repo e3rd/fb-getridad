@@ -28,7 +28,9 @@ let lang = null
  * @return {boolean}
  */
 const is_garbage = n => {
-    if ([lang["Sponsored"].slice(1), lang["Sponsored"]].includes(n.tagName === "SPAN" && n.style.top === '3em' && Array.from(n.parentElement.querySelectorAll('span')).filter(s => s.style.top !== '3em').map(s => s.textContent).join(""))) {
+    if (n.tagName === "SPAN" && n.style.top === '3em' &&
+        (Array.from(n.parentElement.querySelectorAll('span')).filter(s => s.style.top !== '3em').map(s => s.textContent).join("").includes(lang["Sponsored"].slice(1))
+            || n.textContent.length === 1 && n.nextElementSibling.textContent.length === 1)) {
         return true
     } else if (n.tagName === "B" && n.textContent.replaceAll("-", "") === lang["Sponsored"]) { // "Sponsored"
         return true
@@ -51,7 +53,7 @@ const is_garbage = n => {
  * Make given node invisible if evaluated as garbage
  * @param node
  */
-function check_garbage(node) {        
+function check_garbage(node) {
     const is = is_garbage(node)
     if (debug) {
         console.log('[fb-getridad] Checking: ', node, is);
@@ -61,7 +63,7 @@ function check_garbage(node) {
         node.style["margin-left"] = "50px"
         node.style.height = "150px"
         node.style["overflow-y"] = "scroll"
-    }    
+    }
 }
 
 /**
@@ -113,4 +115,4 @@ function main() {
     Array.from(document.querySelectorAll("data-pagelet")).filter(check_garbage)
 }
 
-setTimeout(() =>  main(), 500)
+setTimeout(() => main(), 500)
