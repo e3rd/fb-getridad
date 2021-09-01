@@ -7,13 +7,19 @@ const LANG = {
         "Sponsored · Paid for by": "Sponsored · Paid for by",
         "Suggested for you": "Suggested for you"
     },
+    "fr": {
+        "Sponsored": "Sponsorisé",
+        "Sponsored · Paid for by": "Sponsorisé · Financé par",
+        "Suggested for you": "Suggestion pour vous"
+    },
     "cs": {
         "Sponsored": "Sponzorováno",
         "Sponsored · Paid for by": "Sponzorováno · Platí",
         "Suggested for you": "Návrhy pro vás"
-    }    
+    }
+
 }
-const debug = false
+const debug = true
 let lang = null
 
 /**
@@ -84,7 +90,18 @@ function fetch_language() {
 
 function main() {
     const shibboleth = fetch_language()
-    lang = LANG[shibboleth === "Hledejte na Facebooku" ? "cs" : "en"]
+    //lang = LANG[shibboleth === "Hledejte na Facebooku" ? "cs" : "en"]
+    switch(shibboleth) {
+      case "Hledejte na Facebooku":
+        lang = LANG["cs"]
+        break;
+      case "Rechercher sur Facebook":
+        lang = LANG["fr"]
+        break;
+      default:
+        lang = LANG["en"]
+    }
+
     if (debug) {
         console.log("[fb-getridad] Lang: ", lang)
     }
