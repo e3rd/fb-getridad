@@ -19,7 +19,7 @@ const LANG = {
     }
 
 }
-const debug = true
+const debug = false
 let lang = null
 
 /**
