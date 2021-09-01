@@ -1,4 +1,4 @@
-Removes sponsored and suggested content. Release your wall from imposed content.
+Removes sponsored and suggested content. Release your wall from imposed content. Works for Czech, English and French.
 
 ## Firefox
 https://addons.mozilla.org/cs/firefox/addon/fb-getridad/
