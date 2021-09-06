@@ -5,17 +5,20 @@ const LANG = {
     "en": {
         "Sponsored": "Sponsored",
         "Sponsored · Paid for by": "Sponsored · Paid for by",
-        "Suggested for you": "Suggested for you"
+        "Suggested for you": "Suggested for you",
+        "Suggested live gaming broadcast": "Suggested live gaming broadcast" // XX not sure with the translation
     },
     "fr": {
         "Sponsored": "Sponsorisé",
         "Sponsored · Paid for by": "Sponsorisé · Financé par",
-        "Suggested for you": "Suggestion pour vous"
+        "Suggested for you": "Suggestion pour vous",
+        "Suggested live gaming broadcast": "Suggested live gaming broadcast" // XX translation wrong
     },
     "cs": {
         "Sponsored": "Sponzorováno",
         "Sponsored · Paid for by": "Sponzorováno · Platí",
-        "Suggested for you": "Návrhy pro vás"
+        "Suggested for you": "Návrhy pro vás",
+        "Suggested live gaming broadcast": "Navrhované živé herní vysílání"
     }
 
 }
@@ -30,14 +33,15 @@ let lang = null
 const is_garbage = n => {
     if (n.tagName === "SPAN" && n.style.top === '3em' &&
         (Array.from(n.parentElement.querySelectorAll('span')).filter(s => s.style.top !== '3em').map(s => s.textContent).join("").includes(lang["Sponsored"].slice(1))
-            || n.textContent.length === 1 && n.nextElementSibling.textContent.length === 1)) {
+        //    || n.textContent.length === 1 && n.nextElementSibling.textContent.length === 1
+        )) {
         return true
     } else if (n.tagName === "B" && n.textContent.replaceAll("-", "") === lang["Sponsored"]) { // "Sponsored"
         return true
     } else if (n.textContent.startsWith(lang["Sponsored · Paid for by"])) {
         return true
     } else if (!n.children.length) {
-        if (n.textContent === lang["Suggested for you"]) {
+        if ([lang["Suggested for you"], lang["Suggested live gaming broadcast"]].includes(n.textContent)) {
             return true
         }
     }
@@ -93,20 +97,18 @@ function fetch_language() {
 function main() {
     const shibboleth = fetch_language()
     //lang = LANG[shibboleth === "Hledejte na Facebooku" ? "cs" : "en"]
-    switch(shibboleth) {
-      case "Hledejte na Facebooku":
-        lang = LANG["cs"]
-        break;
-      case "Rechercher sur Facebook":
-        lang = LANG["fr"]
-        break;
-      default:
-        lang = LANG["en"]
+    switch (shibboleth) {
+        case "Hledejte na Facebooku":
+            lang = LANG["cs"]
+            break;
+        case "Rechercher sur Facebook":
+            lang = LANG["fr"]
+            break;
+        default:
+            lang = LANG["en"]
     }
 
-    if (debug) {
-        console.log("[fb-getridad] Lang: ", lang)
-    }
+    console.log("[fb-getridad] Startup with lang: ", lang)
 
 // Start listening for new elements
     observer.observe(document.body, {childList: true, subtree: true})
