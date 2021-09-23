@@ -44,9 +44,13 @@ const is_garbage = n => {
     } else if (!n.children.length) {
         if ([lang["Suggested for you"], lang["Suggested live gaming broadcast"]].includes(n.textContent)) {
             return true
-        } else if(n.tagName === "SPAN" && n.textContent === lang["Sponsored"][0]) {
-            const siblings = Array.from(n.parentElement.childNodes).map(n => n.textContent)
-            return Array.from(lang["Sponsored"]).every(ch => siblings.includes(ch))
+        } else if (n.tagName === "SPAN" && n.textContent === lang["Sponsored"][0]) {
+            let siblings = Array.from(n.parentElement.childNodes).map(n => n.textContent)
+            return Array.from(lang["Sponsored"]).every(ch => {
+                const i = siblings.indexOf(ch);
+                siblings = siblings.slice(i);
+                return i > -1
+            })
         }
     }
     for (const sub_node of n.children) {
