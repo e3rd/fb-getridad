@@ -31,18 +31,22 @@ let lang = null
  * @return {boolean}
  */
 const is_garbage = n => {
-    if (n.tagName === "SPAN" && n.style.top === '3em' &&
-        (Array.from(n.parentElement.querySelectorAll('span')).filter(s => s.style.top !== '3em' && s.style.display !== 'none').map(s => s.textContent).join("").includes(lang["Sponsored"].slice(1))
-        //    || n.textContent.length === 1 && n.nextElementSibling.textContent.length === 1
-        )) {
-        return true
-    } else if (n.tagName === "B" && n.textContent.replaceAll("-", "") === lang["Sponsored"]) { // "Sponsored"
+    // if (n.tagName === "SPAN" && n.style.top === '3em' &&
+    //     (Array.from(n.parentElement.querySelectorAll('span')).filter(s => s.style.top !== '3em' && s.style.display !== 'none').map(s => s.textContent).join("").includes(lang["Sponsored"].slice(1))
+    //     //    || n.textContent.length === 1 && n.nextElementSibling.textContent.length === 1
+    //     )) {
+    //     return true
+    // } else
+    if (n.tagName === "B" && n.textContent.replaceAll("-", "") === lang["Sponsored"]) { // "Sponsored"
         return true
     } else if (n.textContent.startsWith(lang["Sponsored · Paid for by"])) {
         return true
     } else if (!n.children.length) {
         if ([lang["Suggested for you"], lang["Suggested live gaming broadcast"]].includes(n.textContent)) {
             return true
+        } else if(n.tagName === "SPAN" && n.textContent === lang["Sponsored"][0]) {
+            const siblings = Array.from(n.parentElement.childNodes).map(n => n.textContent)
+            return Array.from(lang["Sponsored"]).every(ch => siblings.includes(ch))
         }
     }
     for (const sub_node of n.children) {
