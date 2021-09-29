@@ -24,6 +24,7 @@ const LANG = {
 }
 const debug = false
 let lang = null
+lang = LANG["cs"] // debugging default
 
 /**
  * Check if the given node should be removed
@@ -45,7 +46,9 @@ const is_garbage = n => {
         if ([lang["Suggested for you"], lang["Suggested live gaming broadcast"]].includes(n.textContent)) {
             return true
         } else if (n.tagName === "SPAN" && n.textContent === lang["Sponsored"][0]) {
-            let siblings = Array.from(n.parentElement.childNodes).map(n => n.textContent)
+            let siblings = Array.from(n.parentElement.childNodes)
+                .filter(n => n.style.top !== '3em' && n.style.display !== 'none')
+                .map(n => n.textContent)
             return Array.from(lang["Sponsored"]).every(ch => {
                 const i = siblings.indexOf(ch);
                 siblings = siblings.slice(i);
@@ -104,7 +107,6 @@ function fetch_language() {
 
 function main() {
     const shibboleth = fetch_language()
-    //lang = LANG[shibboleth === "Hledejte na Facebooku" ? "cs" : "en"]
     switch (shibboleth) {
         case "Hledejte na Facebooku":
             lang = LANG["cs"]
@@ -118,10 +120,10 @@ function main() {
 
     console.log("[fb-getridad] Startup with lang: ", lang)
 
-// Start listening for new elements
+    // Start listening for new elements
     observer.observe(document.body, {childList: true, subtree: true})
 
-// Process initial elements
+    // Process initial elements
     Array.from(document.querySelectorAll("data-pagelet")).filter(check_garbage)
 }
 
