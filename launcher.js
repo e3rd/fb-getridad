@@ -47,7 +47,7 @@ const is_garbage = n => {
             return true
         } else if (n.tagName === "SPAN" && n.textContent === lang["Sponsored"][0]) {
             let siblings = Array.from(n.parentElement.childNodes)
-                .filter(n => n.style.top !== '3em' && n.style.display !== 'none')
+                .filter(n => n.style === undefined || n.style.top !== '3em' && n.style.display !== 'none')
                 .map(n => n.textContent)
             return Array.from(lang["Sponsored"]).every(ch => {
                 const i = siblings.indexOf(ch);
