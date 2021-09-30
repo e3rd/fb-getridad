@@ -99,14 +99,16 @@ const observer = new MutationObserver((records) => {
     })
 })
 
-
+/**
+ * Find the language and start listening
+ * @return {boolean}
+ */
 function fetch_language() {
     const el = document.querySelector("input[type=search]")
-    return el && el.getAttribute("placeholder")
-}
-
-function main() {
-    const shibboleth = fetch_language()
+    if (!el) {
+        return false
+    }
+    const shibboleth = el.getAttribute("placeholder")
     switch (shibboleth) {
         case "Hledejte na Facebooku":
             lang = LANG["cs"]
@@ -114,17 +116,37 @@ function main() {
         case "Rechercher sur Facebook":
             lang = LANG["fr"]
             break;
+        case "Search Facebook":
+            lang = LANG["en"]
+            break;
         default:
+            console.log("[fb-getridad] Lang is not sure.")
             lang = LANG["en"]
     }
 
-    console.log("[fb-getridad] Startup with lang: ", lang)
+    console.log(`[fb-getridad] Startup shibboleth: '${shibboleth}', lang:`, lang)
 
     // Start listening for new elements
     observer.observe(document.body, {childList: true, subtree: true})
 
     // Process initial elements
     Array.from(document.querySelectorAll("data-pagelet")).filter(check_garbage)
+    return true
 }
 
-setTimeout(() => main(), 500)
+
+/**
+ *
+ * @param callback When True not returned, we set another timeout until tries left.
+ * @param timeout
+ * @param tries
+ */
+function setTimeoutUntilTrue(callback, timeout, tries = 5) {
+    setTimeout(() => {
+        if (callback() !== true && --tries) {
+            setTimeoutUntilTrue(callback, timeout, tries)
+        }
+    }, timeout)
+}
+
+setTimeoutUntilTrue(fetch_language, 200, 100)
