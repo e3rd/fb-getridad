@@ -106,6 +106,7 @@ const observer = new MutationObserver((records) => {
 function fetch_language() {
     const el = document.querySelector("input[type=search]")
     if (!el) {
+	console.log("[fb-getridad] document.querySelector returns null");
         return false
     }
     const shibboleth = el.getAttribute("placeholder")
