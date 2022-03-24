@@ -126,14 +126,20 @@ function fetch_language() {
 
     console.log(`[fb-getridad] Startup shibboleth: '${shibboleth}', lang:`, lang)
 
-    // Start listening for new elements
-    observer.observe(document.body, {childList: true, subtree: true})
-
-    // Process initial elements
-    Array.from(document.querySelectorAll("data-pagelet")).filter(check_garbage)
     return true
 }
 
+function fb_getridad_main()
+{
+	console.log("[fb-getridad] Startup");
+	setTimeoutUntilTrue(fetch_language, 200, 100);
+	
+	// Process initial elements
+    Array.from(document.querySelectorAll("data-pagelet")).filter(check_garbage)
+	
+	// Start listening for new elements
+    observer.observe(document.body, {childList: true, subtree: true})
+}
 
 /**
  *
@@ -149,4 +155,5 @@ function setTimeoutUntilTrue(callback, timeout, tries = 5) {
     }, timeout)
 }
 
-setTimeoutUntilTrue(fetch_language, 200, 100)
+
+fb_getridad_main()
