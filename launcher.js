@@ -110,6 +110,7 @@ function fetch_language() {
     }
     const shibboleth = el.getAttribute("placeholder")
     switch (shibboleth) {
+	case "Hledejte na Messengeru":
         case "Hledejte na Facebooku":
             lang = LANG["cs"]
             break;
