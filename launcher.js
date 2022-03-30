@@ -6,19 +6,28 @@ const LANG = {
         "Sponsored": "Sponsored",
         "Sponsored · Paid for by": "Sponsored · Paid for by",
         "Suggested for you": "Suggested for you",
-        "Suggested live gaming broadcast": "Suggested live gaming broadcast" // XX not sure with the translation
+        "Suggested live gaming broadcast": "Suggested live gaming broadcast", // XX not sure with the translation
+        "People You May Know": "People You May Know",
+        "Friend Requests": "Friend Requests",
+        "Videos Just For You": "Videos Just For You",
     },
     "fr": {
         "Sponsored": "Sponsorisé",
         "Sponsored · Paid for by": "Sponsorisé · Financé par",
         "Suggested for you": "Suggestion pour vous",
-        "Suggested live gaming broadcast": "Suggested live gaming broadcast" // XX translation wrong
+        "Suggested live gaming broadcast": "Suggested live gaming broadcast", // XX translation wrong
+        "People You May Know": "Les gens que vous connaissez", // XX translation wrong
+        "Friend Requests": "Friend Requests", // XX
+        "Videos Just For You": "Videos Just For You", // XX
     },
     "cs": {
         "Sponsored": "Sponzorováno",
         "Sponsored · Paid for by": "Sponzorováno · Platí",
         "Suggested for you": "Návrhy pro vás",
-        "Suggested live gaming broadcast": "Navrhované živé herní vysílání"
+        "Suggested live gaming broadcast": "Navrhované živé herní vysílání",
+        "People You May Know": "Koho možná znáte",
+        "Friend Requests": "Friend Requests", // XX
+        "Videos Just For You": "Videos Just For You", // XX
     }
 
 }
@@ -43,7 +52,8 @@ const is_garbage = n => {
     } else if (n.textContent.startsWith(lang["Sponsored · Paid for by"])) {
         return true
     } else if (!n.children.length) {
-        if ([lang["Suggested for you"], lang["Suggested live gaming broadcast"]].includes(n.textContent)) {
+        if ([lang["Suggested for you"], lang["Suggested live gaming broadcast"], lang["People You May Know"], lang["Friend Requests"]]
+            .includes(n.textContent)) {
             return true
         } else if (n.tagName === "SPAN" && n.textContent === lang["Sponsored"][0]) {
             let siblings = Array.from(n.parentElement.childNodes)
@@ -110,6 +120,7 @@ function fetch_language() {
     }
     const shibboleth = el.getAttribute("placeholder")
     switch (shibboleth) {
+        case "Hledejte na Messengeru":
         case "Hledejte na Facebooku":
             lang = LANG["cs"]
             break;
