@@ -33,7 +33,6 @@ const LANG = {
 }
 const debug = false
 let lang = null
-lang = LANG["cs"] // debugging default
 
 /**
  * Check if the given node should be removed
@@ -113,29 +112,18 @@ const observer = new MutationObserver((records) => {
  * Find the language and start listening
  * @return {boolean}
  */
-function fetch_language() {
-    const el = document.querySelector("input[type=search]")
-    if (!el) {
+function main() {
+    const lang_tag = document.querySelector("html").getAttribute("lang")
+    if (!lang_tag) {
+        console.log("[fb-getridad] <html lang> tag returns null");
+        return false
+    } else if(!(lang_tag in LANG)) {
+        console.log(`[fb-getridad] lang ${lang_tag} not supported`);
         return false
     }
-    const shibboleth = el.getAttribute("placeholder")
-    switch (shibboleth) {
-        case "Hledejte na Messengeru":
-        case "Hledejte na Facebooku":
-            lang = LANG["cs"]
-            break;
-        case "Rechercher sur Facebook":
-            lang = LANG["fr"]
-            break;
-        case "Search Facebook":
-            lang = LANG["en"]
-            break;
-        default:
-            console.log("[fb-getridad] Lang is not sure.")
-            lang = LANG["en"]
-    }
+    lang = LANG[lang_tag]
 
-    console.log(`[fb-getridad] Startup shibboleth: '${shibboleth}', lang:`, lang)
+    console.log(`[fb-getridad] Startup with lang: '${lang_tag}'`)
 
     // Start listening for new elements
     observer.observe(document.body, {childList: true, subtree: true})
@@ -145,19 +133,4 @@ function fetch_language() {
     return true
 }
 
-
-/**
- *
- * @param callback When True not returned, we set another timeout until tries left.
- * @param timeout
- * @param tries
- */
-function setTimeoutUntilTrue(callback, timeout, tries = 5) {
-    setTimeout(() => {
-        if (callback() !== true && --tries) {
-            setTimeoutUntilTrue(callback, timeout, tries)
-        }
-    }, timeout)
-}
-
-setTimeoutUntilTrue(fetch_language, 200, 100)
+main()
