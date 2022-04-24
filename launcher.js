@@ -46,11 +46,11 @@ const is_garbage = n => {
     //     )) {
     //     return true
     // } else
-    if (n.tagName === "B" && n.textContent.replaceAll("-", "") === lang["Sponsored"]) { // "Sponsored"
+    if (n.tagName === "B" && n.textContent.replaceAll("-", "") === lang["Sponsored"])  // "Sponsored"
         return true
-    } else if (n.textContent.startsWith(lang["Sponsored · Paid for by"])) {
+    if (n.textContent.startsWith(lang["Sponsored · Paid for by"]))
         return true
-    } else if (!n.children.length) {
+    if (!n.children.length) {
         if ([lang["Suggested for you"], lang["Suggested live gaming broadcast"], lang["People You May Know"], lang["Friend Requests"]]
             .includes(n.textContent)) {
             return true
@@ -65,6 +65,33 @@ const is_garbage = n => {
             })
         }
     }
+	
+	let topflexspans = Array.from(n.getElementsByTagName("SPAN")).filter( (span) => { return (span.hasAttribute("style") && span.getAttribute("style").includes("display: flex")); } )
+	if (topflexspans.length > 0)  // has a SPAN with style="display:flex"
+	{
+		for (let index = 0; index < topflexspans.length; index++)
+		{
+			let letters = Array.from(topflexspans[index].childNodes).filter((span) => { return span.hasAttribute("style") && span.getAttribute("style").includes("order:") });
+			// sort letters by style.order
+			let maxorder = 0;
+			for (let i = 0; i < letters.length; i++)  // find the letter with the highest flex directive "order:"
+			{
+				let stylewords = letters[i].getAttribute("style").split(" ");
+				let thislettersorder = Number(stylewords[stylewords.indexOf("order:") + 1].replace(";", ""));
+				if (thislettersorder > maxorder) maxorder = thislettersorder;
+			}
+			// iterate over letters by order and build resulting string
+			let result = "";
+			for (let i = 1; i <= maxorder; i++)
+			{
+				let currletter = letters.find( (span) => { return (span.getAttribute("style").includes("order: " + i + ";")); } );
+				if (currletter) result = result + currletter.textContent;
+			}
+			
+			if (result === lang["Sponsored"]) return true;
+		}
+	}
+	
     for (const sub_node of n.children) {
         if (is_garbage(sub_node)) {
             return true
