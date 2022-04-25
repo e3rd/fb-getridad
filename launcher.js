@@ -66,14 +66,19 @@ const is_garbage = n => {
         }
     }
 	
-	let topflexspans = Array.from(n.getElementsByTagName("SPAN")).filter( (span) => { return (span.hasAttribute("style") && span.getAttribute("style").includes("display: flex")); } )
+	let topflexspans = Array.from(n.getElementsByTagName("SPAN")).filter( (span) => { return (span.hasAttribute && span.hasAttribute("style") && span.getAttribute("style").includes("display: flex")); } )
 	if (topflexspans.length > 0)  // has a SPAN with style="display:flex"
 	{
 		for (let index = 0; index < topflexspans.length; index++)
 		{
-			let letters = Array.from(topflexspans[index].childNodes).filter((span) => { return span.hasAttribute("style") && span.getAttribute("style").includes("order:") });
+			let letters = Array.from(topflexspans[index].childNodes).filter((span) => { return span.hasAttribute && span.hasAttribute("style") && span.getAttribute("style").includes("order:") });
+			
+			// check if topflexspan itself contains a letter in its textContent
+			let tfscopy = topflexspans[index].cloneNode(true);
+			while (tfscopy.childElementCount) tfscopy.removeChild(tfscopy.firstElementChild);
+			if ((tfscopy.textContent !== "") && (tfscopy.getAttribute("style").includes("order:"))) letters.push(tfscopy);  // topflexspan itself contains a letter => add it to letters
 			// sort letters by style.order
-			let maxorder = 0;
+			let maxorder = -1;
 			for (let i = 0; i < letters.length; i++)  // find the letter with the highest flex directive "order:"
 			{
 				let stylewords = letters[i].getAttribute("style").split(" ");
@@ -82,10 +87,10 @@ const is_garbage = n => {
 			}
 			// iterate over letters by order and build resulting string
 			let result = "";
-			for (let i = 1; i <= maxorder; i++)
+			for (let i = 0; i <= maxorder; i++)
 			{
-				let currletter = letters.find( (span) => { return (span.getAttribute("style").includes("order: " + i + ";")); } );
-				if (currletter) result = result + currletter.textContent;
+				let currletter = letters.find( (span) => { return (span.getAttribute && span.getAttribute("style").includes("order: " + i + ";")); } );
+				if (currletter) result = result + currletter.textContent[0];
 			}
 			
 			if (result === lang["Sponsored"]) return true;
