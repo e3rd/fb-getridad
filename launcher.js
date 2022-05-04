@@ -71,7 +71,7 @@ const is_garbage = n => {
 	{
 		for (let index = 0; index < topflexspans.length; index++)
 		{
-			let letters = Array.from(topflexspans[index].childNodes).filter((span) => { return span.hasAttribute && span.hasAttribute("style") && span.getAttribute("style").includes("order:")});
+			let letters = Array.from(topflexspans[index].childNodes).filter((span) => { return span.hasAttribute && span.hasAttribute("style") && span.getAttribute("style").includes("order:") });
 			
 			// check if topflexspan itself contains a letter in its textContent
 			let tfscopy = topflexspans[index].cloneNode(true);
