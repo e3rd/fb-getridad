@@ -27,7 +27,7 @@ const LANG = {
         "Suggested live gaming broadcast": "Navrhované živé herní vysílání",
         "People You May Know": "Koho možná znáte",
         "Friend Requests": "Friend Requests", // XX
-        "Videos Just For You": "Videos Just For You", // XX
+        "Videos Just For You": "Sekvence a krátká videa",
     }
 
 }
@@ -51,7 +51,7 @@ const is_garbage = n => {
     if (n.textContent.startsWith(lang["Sponsored · Paid for by"]))
         return true
     if (!n.children.length) {
-        if ([lang["Suggested for you"], lang["Suggested live gaming broadcast"], lang["People You May Know"], lang["Friend Requests"]]
+        if ([lang["Suggested for you"], lang["Suggested live gaming broadcast"], lang["People You May Know"], lang["Friend Requests"], lang["Videos Just For You"]]
             .includes(n.textContent)) {
             return true
         } else if (n.tagName === "SPAN" && n.textContent === lang["Sponsored"][0]) {
