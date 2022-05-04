@@ -71,11 +71,7 @@ const is_garbage = n => {
 	{
 		for (let index = 0; index < topflexspans.length; index++)
 		{
-			let letters = Array.from(topflexspans[index].childNodes).filter((span) => { return span.hasAttribute && span.hasAttribute("style") && span.getAttribute("style").includes("order:")
-				// #ifdef CHROMIUM - element.computedStyleMap is only supported in Chromium-based browsers :(
-				&& span.computedStyleMap && span.computedStyleMap().get("top").value === "auto" && span.computedStyleMap().get("display").value !== "none"
-				// #endif
-				});
+			let letters = Array.from(topflexspans[index].childNodes).filter((span) => { return span.hasAttribute && span.hasAttribute("style") && span.getAttribute("style").includes("order:")});
 			
 			// check if topflexspan itself contains a letter in its textContent
 			let tfscopy = topflexspans[index].cloneNode(true);
