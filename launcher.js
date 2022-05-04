@@ -27,7 +27,7 @@ const LANG = {
         "Suggested live gaming broadcast": "Navrhované živé herní vysílání",
         "People You May Know": "Koho možná znáte",
         "Friend Requests": "Friend Requests", // XX
-        "Videos Just For You": "Videos Just For You", // XX
+        "Videos Just For You": "Sekvence a krátká videa",
     }
 
 }
@@ -51,7 +51,7 @@ const is_garbage = n => {
     if (n.textContent.startsWith(lang["Sponsored · Paid for by"]))
         return true
     if (!n.children.length) {
-        if ([lang["Suggested for you"], lang["Suggested live gaming broadcast"], lang["People You May Know"], lang["Friend Requests"]]
+        if ([lang["Suggested for you"], lang["Suggested live gaming broadcast"], lang["People You May Know"], lang["Friend Requests"], lang["Videos Just For You"]]
             .includes(n.textContent)) {
             return true
         } else if (n.tagName === "SPAN" && n.textContent === lang["Sponsored"][0]) {
@@ -71,7 +71,11 @@ const is_garbage = n => {
 	{
 		for (let index = 0; index < topflexspans.length; index++)
 		{
-			let letters = Array.from(topflexspans[index].childNodes).filter((span) => { return span.hasAttribute && span.hasAttribute("style") && span.getAttribute("style").includes("order:") });
+			let letters = Array.from(topflexspans[index].childNodes).filter((span) => { return span.hasAttribute && span.hasAttribute("style") && span.getAttribute("style").includes("order:")
+				// #ifdef CHROMIUM - element.computedStyleMap is only supported in Chromium-based browsers :(
+				&& span.computedStyleMap && span.computedStyleMap().get("top").value === "auto" && span.computedStyleMap().get("display").value !== "none"
+				// #endif
+				});
 			
 			// check if topflexspan itself contains a letter in its textContent
 			let tfscopy = topflexspans[index].cloneNode(true);
