@@ -71,7 +71,18 @@ const is_garbage = n => {
 	{
 		for (let index = 0; index < topflexspans.length; index++)
 		{
-			let letters = Array.from(topflexspans[index].childNodes).filter((span) => { return span.hasAttribute && span.hasAttribute("style") && span.getAttribute("style").includes("order:") });
+			let letters = Array.from(topflexspans[index].childNodes).filter((span) =>
+				{ if (span.hasAttribute && span.hasAttribute("style") && span.getAttribute("style").includes("order:"))
+					{
+						if (span.computedStyleMap)
+						{
+							// browser supports element.computedStyleMap (only supported in Chromium-based browsers :( )
+							return span.computedStyleMap().get("top").value === "auto" && span.computedStyleMap().get("display").value !== "none";
+						}
+						else return true;  // element.computedStyleMap not supported
+					}
+				else return false;
+				});
 			
 			// check if topflexspan itself contains a letter in its textContent
 			let tfscopy = topflexspans[index].cloneNode(true);
@@ -130,11 +141,9 @@ const observer = new MutationObserver((records) => {
     records.forEach(record => {
         Array.from(record.addedNodes)
             .filter(n => {
-                if (!n.hasAttribute) {
-                    // console.log('69: n: ', n, records);
-                    return false
-                }
-                return n.hasAttribute("data-pagelet");
+                if (n.hasAttribute && n.hasAttribute("data-pagelet")) return true;
+				if ((n.parentElement.tagName === "DIV") && n.parentElement.hasAttribute("role") && (n.parentElement.getAttribute("role") === "feed")) return true;
+				return false;
             })
             .map(check_garbage)
     })
@@ -161,7 +170,20 @@ function main() {
     observer.observe(document.body, {childList: true, subtree: true})
 
     // Process initial elements
-    Array.from(document.querySelectorAll("data-pagelet")).filter(check_garbage)
+	if (document.querySelectorAll("data-pagelet").length > 0)
+	{
+		// use "data-pagelet"
+		Array.from(document.querySelectorAll("data-pagelet")).filter(check_garbage)
+	}
+	else
+	{
+		// no "data-pagelet" => find posts manually
+		let divfeed = null;
+		let divfeeds = Array.from(document.getElementsByTagName("DIV")).filter((node) => { return node.hasAttribute && node.hasAttribute("role") && (node.getAttribute("role") === "feed"); });
+		if (divfeeds && (divfeeds.length > 0)) divfeed = divfeeds[0];
+		Array.from(divfeed.children).filter(check_garbage);
+	}
+    
     return true
 }
 
