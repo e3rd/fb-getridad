@@ -65,49 +65,47 @@ const is_garbage = n => {
             })
         }
     }
-	
-	let topflexspans = Array.from(n.getElementsByTagName("SPAN")).filter( (span) => { return (span.hasAttribute && span.hasAttribute("style") && span.getAttribute("style").includes("display: flex")); } )
-	if (topflexspans.length > 0)  // has a SPAN with style="display:flex"
-	{
-		for (let index = 0; index < topflexspans.length; index++)
-		{
-			let letters = Array.from(topflexspans[index].childNodes).filter((span) =>
-				{ if (span.hasAttribute && span.hasAttribute("style") && span.getAttribute("style").includes("order:"))
-					{
-						if (span.computedStyleMap)
-						{
-							// browser supports element.computedStyleMap (only supported in Chromium-based browsers :( )
-							return span.computedStyleMap().get("top").value === "auto" && span.computedStyleMap().get("display").value !== "none";
-						}
-						else return true;  // element.computedStyleMap not supported
-					}
-				else return false;
-				});
-			
-			// check if topflexspan itself contains a letter in its textContent
-			let tfscopy = topflexspans[index].cloneNode(true);
-			while (tfscopy.childElementCount) tfscopy.removeChild(tfscopy.firstElementChild);
-			if ((tfscopy.textContent !== "") && (tfscopy.getAttribute("style").includes("order:"))) letters.push(tfscopy);  // topflexspan itself contains a letter => add it to letters
-			// sort letters by style.order
-			let maxorder = -1;
-			for (let i = 0; i < letters.length; i++)  // find the letter with the highest flex directive "order:"
-			{
-				let stylewords = letters[i].getAttribute("style").split(" ");
-				let thislettersorder = Number(stylewords[stylewords.indexOf("order:") + 1].replace(";", ""));
-				if (thislettersorder > maxorder) maxorder = thislettersorder;
-			}
-			// iterate over letters by order and build resulting string
-			let result = "";
-			for (let i = 0; i <= maxorder; i++)
-			{
-				let currletter = letters.find( (span) => { return (span.getAttribute && span.getAttribute("style").includes("order: " + i + ";")); } );
-				if (currletter) result = result + currletter.textContent[0];
-			}
-			
-			if (result === lang["Sponsored"]) return true;
-		}
-	}
-	
+
+
+    for (let topflexspan of Array.from(n.getElementsByTagName("SPAN")).filter((span) => {
+        return (span?.getAttribute("style")?.includes("display: flex"))
+    })) { // has a SPAN with style="display:flex"
+        let letters = Array.from(topflexspan.childNodes).filter((span) => {
+            if (span.hasAttribute && span.hasAttribute("style") && span.getAttribute("style").includes("order:")) {
+                if (span.computedStyleMap) {
+                    // browser supports element.computedStyleMap (only supported in Chromium-based browsers :( )
+                    return span.computedStyleMap().get("top").value === "auto" && span.computedStyleMap().get("display").value !== "none";
+                } else return true;  // element.computedStyleMap not supported
+            } else return false;
+        });
+
+        // check if topflexspan itself contains a letter in its textContent
+        let tfscopy = topflexspan.cloneNode(true);
+        while (tfscopy.childElementCount) tfscopy.removeChild(tfscopy.firstElementChild);
+        if ((tfscopy.textContent !== "") && (tfscopy.getAttribute("style").includes("order:"))) letters.push(tfscopy);  // topflexspan itself contains a letter => add it to letters
+        // sort letters by style.order
+        let maxorder = -1;
+        for (let letter of letters) { // find the letter with the highest flex directive "order:"
+            let stylewords = letter.getAttribute("style").split(" ")
+            maxorder = Math.max(maxorder, Number(stylewords[stylewords.indexOf("order:") + 1].replace(";", "")))
+        }
+        // iterate over letters by order and build resulting string
+        let result = "";
+        for (let i = 0; i <= maxorder; i++) {
+            const currletter = letters.find((span) => {
+                return (span.getAttribute && span.getAttribute("style").includes("order: " + i + ";"))
+            })
+            if (currletter) {
+                result += currletter.textContent[0]
+            }
+        }
+
+        if (result === lang["Sponsored"]) {
+            return true
+        }
+    }
+
+
     for (const sub_node of n.children) {
         if (is_garbage(sub_node)) {
             return true
@@ -141,9 +139,12 @@ const observer = new MutationObserver((records) => {
     records.forEach(record => {
         Array.from(record.addedNodes)
             .filter(n => {
-                if (n.hasAttribute && n.hasAttribute("data-pagelet")) return true;
-				if ((n.parentElement.tagName === "DIV") && n.parentElement.hasAttribute("role") && (n.parentElement.getAttribute("role") === "feed")) return true;
-				return false;
+                if (n?.hasAttribute("data-pagelet")) {
+                    return true
+                } else if ((n.parentElement.tagName === "DIV") && (n.parentElement?.getAttribute("role") === "feed")) {
+                    return true
+                }
+                return false
             })
             .map(check_garbage)
     })
@@ -158,7 +159,7 @@ function main() {
     if (!lang_tag) {
         console.log("[fb-getridad] <html lang> tag returns null");
         return false
-    } else if(!(lang_tag in LANG)) {
+    } else if (!(lang_tag in LANG)) {
         console.log(`[fb-getridad] lang ${lang_tag} not supported`);
         return false
     }
@@ -170,20 +171,19 @@ function main() {
     observer.observe(document.body, {childList: true, subtree: true})
 
     // Process initial elements
-	if (document.querySelectorAll("data-pagelet").length > 0)
-	{
-		// use "data-pagelet"
-		Array.from(document.querySelectorAll("data-pagelet")).filter(check_garbage)
-	}
-	else
-	{
-		// no "data-pagelet" => find posts manually
-		let divfeed = null;
-		let divfeeds = Array.from(document.getElementsByTagName("DIV")).filter((node) => { return node.hasAttribute && node.hasAttribute("role") && (node.getAttribute("role") === "feed"); });
-		if (divfeeds && (divfeeds.length > 0)) divfeed = divfeeds[0];
-		Array.from(divfeed.children).filter(check_garbage);
-	}
-    
+    if (document.querySelector("data-pagelet")) {
+        // use "data-pagelet"
+        Array.from(document.querySelectorAll("data-pagelet")).map(check_garbage)
+    } else {
+        // no "data-pagelet" => find posts manually
+        Array.from(document.getElementsByTagName("DIV")).find((node) => {
+            if (node?.getAttribute("role") === "feed") {
+                Array.from(node.children).map(check_garbage)
+                return true
+            }
+        })
+    }
+
     return true
 }
 
