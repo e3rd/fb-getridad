@@ -67,10 +67,13 @@ const is_garbage = n => {
     }
 
 
-    for (let topflexspan of Array.from(n.getElementsByTagName("SPAN")).filter((span) => {
+	let topflexelements = Array.from(n.getElementsByTagName("SPAN")).filter((span) => {
         return (span?.getAttribute("style")?.includes("display: flex"))
-    })) { // has a SPAN with style="display:flex"
-        let letters = Array.from(topflexspan.childNodes).filter((span) => {
+    }).concat(Array.from(n.getElementsByTagName("DIV")).filter((div) => {
+        return (div?.getAttribute("style")?.includes("display: flex"))
+    }))
+    for (let topflexelement of topflexelements) { // has a SPAN with style="display:flex"
+        let letters = Array.from(topflexelement.childNodes).filter((span) => {
             if (span.hasAttribute && span.hasAttribute("style") && span.getAttribute("style").includes("order:")) {
                 if (span.computedStyleMap) {
                     // browser supports element.computedStyleMap (only supported in Chromium-based browsers :( )
@@ -79,10 +82,10 @@ const is_garbage = n => {
             } else return false;
         });
 
-        // check if topflexspan itself contains a letter in its textContent
-        let tfscopy = topflexspan.cloneNode(true);
-        while (tfscopy.childElementCount) tfscopy.removeChild(tfscopy.firstElementChild);
-        if ((tfscopy.textContent !== "") && (tfscopy.getAttribute("style").includes("order:"))) letters.push(tfscopy);  // topflexspan itself contains a letter => add it to letters
+        // check if topflexelement itself contains a letter in its textContent
+        let tfecopy = topflexelement.cloneNode(true);
+        while (tfecopy.childElementCount) tfecopy.removeChild(tfecopy.firstElementChild);
+        if ((tfecopy.textContent !== "") && (tfecopy.getAttribute("style").includes("order:"))) letters.push(tfecopy);  // topflexelement itself contains a letter => add it to letters
         // sort letters by style.order
         let maxorder = -1;
         for (let letter of letters) { // find the letter with the highest flex directive "order:"
@@ -139,9 +142,9 @@ const observer = new MutationObserver((records) => {
     records.forEach(record => {
         Array.from(record.addedNodes)
             .filter(n => {
-                if (n?.hasAttribute("data-pagelet")) {
+                if ((n?.hasAttribute) && (n.hasAttribute("data-pagelet"))) {
                     return true
-                } else if ((n.parentElement.tagName === "DIV") && (n.parentElement?.getAttribute("role") === "feed")) {
+                } else if ((n?.parentElement?.tagName === "DIV") && (n.parentElement.getAttribute("role") === "feed")) {
                     return true
                 }
                 return false
