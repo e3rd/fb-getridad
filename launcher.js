@@ -73,13 +73,11 @@ const is_garbage = n => {
         return (div?.getAttribute("style")?.includes("display: flex"))
     }))
     for (let topflexelement of topflexelements) { // has a SPAN with style="display:flex"
-        let letters = Array.from(topflexelement.childNodes).filter((span) => {
-            if (span.hasAttribute && span.hasAttribute("style") && span.getAttribute("style").includes("order:")) {
-                if (span.computedStyleMap) {
-                    // browser supports element.computedStyleMap (only supported in Chromium-based browsers :( )
-                    return span.computedStyleMap().get("top").value === "auto" && span.computedStyleMap().get("display").value !== "none";
-                } else return true;  // element.computedStyleMap not supported
-            } else return false;
+        let letters = Array.from(topflexelement.childNodes).filter((div) => {
+            return ((Number(window.getComputedStyle(div).getPropertyValue("order")) > 0)
+				&& (window.getComputedStyle(div).getPropertyValue("top") === "0px")
+				&& (window.getComputedStyle(div).getPropertyValue("display") === "block"));
+            //return div.computedStyleMap().get("top").value === "auto" && div.computedStyleMap().get("display").value !== "none";
         });
 
         // check if topflexelement itself contains a letter in its textContent
@@ -89,14 +87,13 @@ const is_garbage = n => {
         // sort letters by style.order
         let maxorder = -1;
         for (let letter of letters) { // find the letter with the highest flex directive "order:"
-            let stylewords = letter.getAttribute("style").split(" ")
-            maxorder = Math.max(maxorder, Number(stylewords[stylewords.indexOf("order:") + 1].replace(";", "")))
+            maxorder = Math.max(maxorder, Number(window.getComputedStyle(letter).getPropertyValue("order")))
         }
         // iterate over letters by order and build resulting string
         let result = "";
         for (let i = 0; i <= maxorder; i++) {
-            const currletter = letters.find((span) => {
-                return (span.getAttribute && span.getAttribute("style").includes("order: " + i + ";"))
+            const currletter = letters.find((letter) => {
+                return window.getComputedStyle(letter).getPropertyValue("order") == i;
             })
             if (currletter) {
                 result += currletter.textContent[0]
