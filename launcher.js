@@ -75,7 +75,7 @@ const is_garbage = n => {
     for (let topflexelement of topflexelements) { // has a SPAN with style="display:flex"
         let letters = Array.from(topflexelement.childNodes).filter((div) => {
             return ((Number(window.getComputedStyle(div).getPropertyValue("order")) > 0)
-				&& (window.getComputedStyle(div).getPropertyValue("top") === "0px")
+				&& ((Number(window.getComputedStyle(div).getPropertyValue("top").replace("px", "")) < 1))
 				&& (window.getComputedStyle(div).getPropertyValue("display") === "block"));
             //return div.computedStyleMap().get("top").value === "auto" && div.computedStyleMap().get("display").value !== "none";
         });
