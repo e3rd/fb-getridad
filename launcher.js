@@ -124,20 +124,11 @@ function check_garbage(node) {
         console.log('[fb-getridad] Checking: ', node, is);
     }
     if (is) {
-		if (node.tagName === "DIV")
-		{
-			node.style.opacity = "0.2"
-			node.style["margin-left"] = "50px"
-			node.style.height = "150px"
-			node.style["overflow-y"] = "scroll"
-		}
-		else if (node.tagName === "SPAN")
-		{
-			node.children[0].style.opacity = "0.2"
-			node.children[0].style["margin-left"] = "50px"
-			node.children[0].style.height = "150px"
-			node.children[0].style["overflow-y"] = "scroll"
-		}
+		const n = node.tagName === "DIV" ? node : node.children[0]
+		n.style.opacity = "0.2"
+		n.style["margin-left"] = "50px"
+		n.style.height = "150px"
+		n.style["overflow-y"] = "scroll"
     }
 }
 
