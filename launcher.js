@@ -48,6 +48,8 @@ const is_garbage = n => {
     // } else
     if (n.tagName === "B" && n.textContent.replaceAll("-", "") === lang["Sponsored"])  // "Sponsored"
         return true
+    if (n.textContent.startsWith(lang["Sponsored"]))
+        return true
     if (n.textContent.startsWith(lang["Sponsored · Paid for by"]))
         return true
     if (!n.children.length) {
