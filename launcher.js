@@ -149,7 +149,7 @@ const observer = new MutationObserver((records) => {
                     return true
                 } else if ((n?.parentElement?.tagName === "DIV") && (n.parentElement.getAttribute("role") === "feed")) {
                     return true
-                } else if ((n?.parentElement?.children[0].tagName === "H3") && (n.parentElement.children[0].textContent === lang["FeedHeader"])) {
+                } else if ((n?.parentElement?.children?.length > 0) && (n.parentElement.children[0].tagName === "H3") && (n.parentElement.children[0].textContent === lang["FeedHeader"])) {
 					return true
 				}
                 return false
