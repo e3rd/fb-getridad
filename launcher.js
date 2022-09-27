@@ -10,6 +10,7 @@ const LANG = {
         "People You May Know": "People You May Know",
         "Friend Requests": "Friend Requests",
         "Videos Just For You": "Videos Just For You",
+	"FeedHeader": "Feed of posts", // XX
     },
     "fr": {
         "Sponsored": "Sponsorisé",
@@ -19,6 +20,7 @@ const LANG = {
         "People You May Know": "Les gens que vous connaissez", // XX translation wrong
         "Friend Requests": "Friend Requests", // XX
         "Videos Just For You": "Videos Just For You", // XX
+	"FeedHeader": "Le feed des posts", // XX
     },
     "cs": {
         "Sponsored": "Sponzorováno",
@@ -28,6 +30,7 @@ const LANG = {
         "People You May Know": "Koho možná znáte",
         "Friend Requests": "Friend Requests", // XX
         "Videos Just For You": "Sekvence a krátká videa",
+	"FeedHeader": "Příspěvku v kanálu vybraných příspěvků",
     }
 
 }
@@ -48,7 +51,7 @@ const is_garbage = n => {
     // } else
     if (n.tagName === "B" && n.textContent.replaceAll("-", "") === lang["Sponsored"])  // "Sponsored"
         return true
-    if (n.textContent.startsWith(lang["Sponsored"]))
+	if (n.textContent.startsWith(lang["Sponsored"]))
         return true
     if (n.textContent.startsWith(lang["Sponsored · Paid for by"]))
         return true
@@ -146,7 +149,9 @@ const observer = new MutationObserver((records) => {
                     return true
                 } else if ((n?.parentElement?.tagName === "DIV") && (n.parentElement.getAttribute("role") === "feed")) {
                     return true
-                }
+                } else if ((n?.parentElement?.children[0].tagName === "H3") && (n.parentElement.children[0].textContent === lang["FeedHeader"])) {
+					return true
+				}
                 return false
             })
             .map(check_garbage)
@@ -173,18 +178,29 @@ function main() {
     // Start listening for new elements
     observer.observe(document.body, {childList: true, subtree: true})
 
-    // Process initial elements
-    if (document.querySelector("data-pagelet")) {
+	// Process initial elements
+	let posts = Array.from(document.querySelectorAll("data-pagelet"))
+	if (posts?.length > 0) {
         // use "data-pagelet"
-        Array.from(document.querySelectorAll("data-pagelet")).map(check_garbage)
-    } else {
-        // no "data-pagelet" => find posts manually
-        Array.from(document.getElementsByTagName("DIV")).find((node) => {
-            if (node?.getAttribute("role") === "feed") {
-                Array.from(node.children).map(check_garbage)
-                return true
-            }
-        })
+		console.log("[fb-getridad] using data-pagelet")
+		posts.map(check_garbage)
+	} else {  // no "data-pagelet" => try div role="feed"
+		let divfeed = Array.from(document.getElementsByTagName("DIV")).find((node) => { return node?.getAttribute && node.getAttribute("role") && (node.getAttribute("role") === "feed"); })
+		if (divfeed)
+		{
+			console.log("[fb-getridad] using div role=feed")
+			Array.from(divfeed.children).map(check_garbage)
+		}
+		else {
+			// no "data-pagelet" or div role="feed" => search for a div with a h3 with textContent === lang[FeedHeader]
+			divfeed = Array.from(document.getElementsByTagName("H3")).find((node) => { return node.textContent === lang["FeedHeader"] })
+			if (divfeed)
+			{
+				console.log("[fb-getridad] using div with a H3 with FeedHeader")
+				Array.from(divfeed.parentElement.children).map(check_garbage)
+			}
+			else console.log("[fb-getridad] failed to find the div that represents feed")
+		}
     }
 
     return true
