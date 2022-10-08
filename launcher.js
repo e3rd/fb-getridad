@@ -110,6 +110,15 @@ const is_garbage = n => {
         }
     }
 
+	if (n.tagName == "use" && n.openOrClosedShadowRoot)  // only supported in Firefox
+	{
+		let sr = n.openOrClosedShadowRoot
+		if (sr.children.length > 0)
+		{
+			if (is_garbage(sr.children[0])) return true;
+		}
+	}
+
 
     for (const sub_node of n.children) {
         if (is_garbage(sub_node)) {
