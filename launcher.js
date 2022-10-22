@@ -159,10 +159,10 @@ const observer = new MutationObserver((records) => {
                 } else if ((n?.parentElement?.tagName === "DIV") && (n.parentElement.getAttribute("role") === "feed")) {
                     return true
                 } else if ((n?.parentElement?.children?.length > 0) && (n.parentElement.children[0].tagName === "H3") && (n.parentElement.children[0].textContent === lang["FeedHeader"])) {
-					return true
-				} else if ((n?.parentElement?.parentElement?.children?.length > 0) && (n.parentElement.parentElement.children[0].tagName === "H3") && (n.parentElement.parentElement.children[0].textContent === lang["FeedHeader"])) {
-					return true
-				}
+                    return true
+		} else if ((n?.parentElement?.parentElement?.children?.length > 0) && (n.parentElement.parentElement.children[0].tagName === "H3") && (n.parentElement.parentElement.children[0].textContent === lang["FeedHeader"])) {
+		    return true
+		}
                 return false
             })
             .map(check_garbage)
