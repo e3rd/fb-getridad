@@ -160,6 +160,8 @@ const observer = new MutationObserver((records) => {
                     return true
                 } else if ((n?.parentElement?.children?.length > 0) && (n.parentElement.children[0].tagName === "H3") && (n.parentElement.children[0].textContent === lang["FeedHeader"])) {
 					return true
+				} else if ((n?.parentElement?.parentElement?.children?.length > 0) && (n.parentElement.parentElement.children[0].tagName === "H3") && (n.parentElement.parentElement.children[0].textContent === lang["FeedHeader"])) {
+					return true
 				}
                 return false
             })
@@ -192,7 +194,7 @@ function main() {
 	if (posts?.length > 0) {
         // use "data-pagelet"
 		console.log("[fb-getridad] using data-pagelet")
-		posts.map(check_garbage)
+        posts.map(check_garbage)
 	} else {  // no "data-pagelet" => try div role="feed"
 		let divfeed = Array.from(document.getElementsByTagName("DIV")).find((node) => { return node?.getAttribute && node.getAttribute("role") && (node.getAttribute("role") === "feed"); })
 		if (divfeed)
@@ -201,14 +203,17 @@ function main() {
 			Array.from(divfeed.children).map(check_garbage)
 		}
 		else {
-			// no "data-pagelet" or div role="feed" => search for a div with a h3 with textContent === lang[FeedHeader]
-			divfeed = Array.from(document.getElementsByTagName("H3")).find((node) => { return node.textContent === lang["FeedHeader"] })
-			if (divfeed)
+			// no "data-pagelet" or div role="feed" => search for a h3 with textContent === lang[FeedHeader]
+			let feedheader = Array.from(document.getElementsByTagName("H3")).find((node) => { return node.textContent === lang["FeedHeader"] })
+			if (feedheader)
 			{
 				console.log("[fb-getridad] using div with a H3 with FeedHeader")
-				Array.from(divfeed.parentElement.children).map(check_garbage)
+				// if feedheader.parent has > 2 children => it is divfeed and contains posts directly
+				// if feedheader.parent has exactly 2 children, they are the feed header and another div that encapsulates all posts
+				divfeed = (feedheader.parentElement.childElementCount > 2) ? feedheader.parentElement : feedheader.parentElement.children[1]
+				Array.from(divfeed.children).map(check_garbage)
 			}
-			else console.log("[fb-getridad] failed to find the div that represents feed")
+			else console.log("[fb-getridad] failed to find a H3 with FeedHeader")
 		}
     }
 
