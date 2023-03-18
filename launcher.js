@@ -29,7 +29,7 @@ const LANG = {
         "Suggested live gaming broadcast": "Navrhované živé herní vysílání",
         "People You May Know": "Koho možná znáte",
         "Friend Requests": "Friend Requests", // XX
-        "Videos Just For You": "Sekvence a krátká videa",
+        "Videos Just For You": "Reely a krátká videa",
 	"FeedHeader": "Příspěvku v kanálu vybraných příspěvků",
     }
 
