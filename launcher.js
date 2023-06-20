@@ -6,31 +6,34 @@ const LANG = {
         "Sponsored": "Sponsored",
         "Sponsored · Paid for by": "Sponsored · Paid for by",
         "Suggested for you": "Suggested for you",
+        "Suggested groups": "Suggested groups",
         "Suggested live gaming broadcast": "Suggested live gaming broadcast", // XX not sure with the translation
         "People You May Know": "People You May Know",
         "Friend Requests": "Friend Requests",
-        "Videos Just For You": "Videos Just For You",
-	"FeedHeader": "Feed of posts", // XX
+        "Videos Just For You": "Reels and short videos",
+        "FeedHeader": "Feed of posts", // XX
     },
     "fr": {
         "Sponsored": "Sponsorisé",
         "Sponsored · Paid for by": "Sponsorisé · Financé par",
         "Suggested for you": "Suggestion pour vous",
+        "Suggested groups": "Suggested groups", // XX
         "Suggested live gaming broadcast": "Suggested live gaming broadcast", // XX translation wrong
         "People You May Know": "Les gens que vous connaissez", // XX translation wrong
         "Friend Requests": "Friend Requests", // XX
         "Videos Just For You": "Videos Just For You", // XX
-	"FeedHeader": "Le feed des posts", // XX
+        "FeedHeader": "Le feed des posts", // XX
     },
     "cs": {
         "Sponsored": "Sponzorováno",
         "Sponsored · Paid for by": "Sponzorováno · Platí",
         "Suggested for you": "Návrhy pro vás",
+        "Suggested groups": "Navrhované skupiny", // XX ?
         "Suggested live gaming broadcast": "Navrhované živé herní vysílání",
         "People You May Know": "Koho možná znáte",
         "Friend Requests": "Friend Requests", // XX
         "Videos Just For You": "Reely a krátká videa",
-	"FeedHeader": "Příspěvku v kanálu vybraných příspěvků",
+        "FeedHeader": "Příspěvku v kanálu vybraných příspěvků",
     }
 
 }
@@ -51,12 +54,17 @@ const is_garbage = n => {
     // } else
     if (n.tagName === "B" && n.textContent.replaceAll("-", "") === lang["Sponsored"])  // "Sponsored"
         return true
-	if (n.textContent.startsWith(lang["Sponsored"]))
+    if (n.textContent.startsWith(lang["Sponsored"]))
         return true
     if (n.textContent.startsWith(lang["Sponsored · Paid for by"]))
         return true
     if (!n.children.length) {
-        if ([lang["Suggested for you"], lang["Suggested live gaming broadcast"], lang["People You May Know"], lang["Friend Requests"], lang["Videos Just For You"]]
+        if ([lang["Suggested for you"],
+        lang["Suggested live gaming broadcast"],
+        lang["Suggested groups"],
+        lang["People You May Know"],
+        lang["Friend Requests"],
+        lang["Videos Just For You"]]
             .includes(n.textContent)) {
             return true
         } else if (n.tagName === "SPAN" && n.textContent === lang["Sponsored"][0]) {
@@ -72,7 +80,7 @@ const is_garbage = n => {
     }
 
 
-	let topflexelements = Array.from(n.getElementsByTagName("SPAN")).filter((span) => {
+    let topflexelements = Array.from(n.getElementsByTagName("SPAN")).filter((span) => {
         return (span?.getAttribute("style")?.includes("display: flex"))
     }).concat(Array.from(n.getElementsByTagName("DIV")).filter((div) => {
         return (div?.getAttribute("style")?.includes("display: flex"))
@@ -80,8 +88,8 @@ const is_garbage = n => {
     for (let topflexelement of topflexelements) { // has a SPAN with style="display:flex"
         let letters = Array.from(topflexelement.childNodes).filter((div) => {
             return ((Number(window.getComputedStyle(div).getPropertyValue("order")) > 0)
-				&& ((Number(window.getComputedStyle(div).getPropertyValue("top").replace("px", "")) < 1))
-				&& (window.getComputedStyle(div).getPropertyValue("display") === "block"));
+                && ((Number(window.getComputedStyle(div).getPropertyValue("top").replace("px", "")) < 1))
+                && (window.getComputedStyle(div).getPropertyValue("display") === "block"));
             //return div.computedStyleMap().get("top").value === "auto" && div.computedStyleMap().get("display").value !== "none";
         });
 
@@ -110,14 +118,13 @@ const is_garbage = n => {
         }
     }
 
-	if (n.tagName == "use" && n.openOrClosedShadowRoot)  // only supported in Firefox
-	{
-		let sr = n.openOrClosedShadowRoot
-		if (sr.children.length > 0)
-		{
-			if (is_garbage(sr.children[0])) return true;
-		}
-	}
+    if (n.tagName == "use" && n.openOrClosedShadowRoot)  // only supported in Firefox
+    {
+        let sr = n.openOrClosedShadowRoot
+        if (sr.children.length > 0) {
+            if (is_garbage(sr.children[0])) return true;
+        }
+    }
 
 
     for (const sub_node of n.children) {
@@ -138,11 +145,11 @@ function check_garbage(node) {
         console.log('[fb-getridad] Checking: ', node, is);
     }
     if (is) {
-		const n = node.tagName === "DIV" ? node : node.children[0]
-		n.style.opacity = "0.2"
-		n.style["margin-left"] = "50px"
-		n.style.height = "150px"
-		n.style["overflow-y"] = "scroll"
+        const n = node.tagName === "DIV" ? node : node.children[0]
+        n.style.opacity = "0.2"
+        n.style["margin-left"] = "50px"
+        n.style.height = "150px"
+        n.style["overflow-y"] = "scroll"
     }
 }
 
@@ -150,24 +157,20 @@ function check_garbage(node) {
  * New elements are checked for garbage content
  * @type {MutationObserver}
  */
-const observer = new MutationObserver((records) => {
-    records.forEach(record => {
+const observer = new MutationObserver(records =>
+    records.forEach(record =>
         Array.from(record.addedNodes)
             .filter(n => {
-                if ((n?.hasAttribute) && (n.hasAttribute("data-pagelet"))) {
-                    return true
-                } else if ((n?.parentElement?.tagName === "DIV") && (n.parentElement.getAttribute("role") === "feed")) {
-                    return true
-                } else if ((n?.parentElement?.children?.length > 0) && (n.parentElement.children[0].tagName === "H3") && (n.parentElement.children[0].textContent === lang["FeedHeader"])) {
-                    return true
-		} else if ((n?.parentElement?.parentElement?.children?.length > 0) && (n.parentElement.parentElement.children[0].tagName === "H3") && (n.parentElement.parentElement.children[0].textContent === lang["FeedHeader"])) {
-		    return true
-		}
-                return false
-            })
-            .map(check_garbage)
-    })
-})
+                // XX sometimes hasAttribute or closest are not functions, catch
+                if (
+                    n?.hasAttribute("data-pagelet")
+                    || n?.parentElement?.tagName === "DIV" && n.parentElement.getAttribute("role") === "feed"
+                    || n?.parentElement?.children?.length > 0 && n.parentElement.children[0].tagName === "H3" && n.parentElement.children[0].textContent === lang["FeedHeader"]
+                    || n?.parentElement?.parentElement?.children?.length > 0 && n.parentElement.parentElement.children[0].tagName === "H3" && n.parentElement.parentElement.children[0].textContent === lang["FeedHeader"]
+                    || n?.closest("div[role=main]")) {
+                    return true;
+                }
+            }).map(check_garbage)))
 
 /**
  * Find the language and start listening
@@ -187,34 +190,32 @@ function main() {
     console.log(`[fb-getridad] Startup with lang: '${lang_tag}'`)
 
     // Start listening for new elements
-    observer.observe(document.body, {childList: true, subtree: true})
+    observer.observe(document.body, { childList: true, subtree: true })
 
-	// Process initial elements
-	let posts = Array.from(document.querySelectorAll("data-pagelet"))
-	if (posts?.length > 0) {
+    // Process initial elements
+    let posts = Array.from(document.querySelectorAll("data-pagelet"))
+    if (posts?.length > 0) {
         // use "data-pagelet"
-		console.log("[fb-getridad] using data-pagelet")
+        console.log("[fb-getridad] using data-pagelet")
         posts.map(check_garbage)
-	} else {  // no "data-pagelet" => try div role="feed"
-		let divfeed = Array.from(document.getElementsByTagName("DIV")).find((node) => { return node?.getAttribute && node.getAttribute("role") && (node.getAttribute("role") === "feed"); })
-		if (divfeed)
-		{
-			console.log("[fb-getridad] using div role=feed")
-			Array.from(divfeed.children).map(check_garbage)
-		}
-		else {
-			// no "data-pagelet" or div role="feed" => search for a h3 with textContent === lang[FeedHeader]
-			let feedheader = Array.from(document.getElementsByTagName("H3")).find((node) => { return node.textContent === lang["FeedHeader"] })
-			if (feedheader)
-			{
-				console.log("[fb-getridad] using div with a H3 with FeedHeader")
-				// if feedheader.parent has > 2 children => it is divfeed and contains posts directly
-				// if feedheader.parent has exactly 2 children, they are the feed header and another div that encapsulates all posts
-				divfeed = (feedheader.parentElement.childElementCount > 2) ? feedheader.parentElement : feedheader.parentElement.children[1]
-				Array.from(divfeed.children).map(check_garbage)
-			}
-			else console.log("[fb-getridad] failed to find a H3 with FeedHeader")
-		}
+    } else {  // no "data-pagelet" => try div role="feed"
+        let divfeed = Array.from(document.getElementsByTagName("DIV")).find((node) => { return node?.getAttribute && node.getAttribute("role") && (node.getAttribute("role") === "feed"); })
+        if (divfeed) {
+            console.log("[fb-getridad] using div role=feed")
+            Array.from(divfeed.children).map(check_garbage)
+        }
+        else {
+            // no "data-pagelet" or div role="feed" => search for a h3 with textContent === lang[FeedHeader]
+            let feedheader = Array.from(document.getElementsByTagName("H3")).find((node) => { return node.textContent === lang["FeedHeader"] })
+            if (feedheader) {
+                console.log("[fb-getridad] using div with a H3 with FeedHeader")
+                // if feedheader.parent has > 2 children => it is divfeed and contains posts directly
+                // if feedheader.parent has exactly 2 children, they are the feed header and another div that encapsulates all posts
+                divfeed = (feedheader.parentElement.childElementCount > 2) ? feedheader.parentElement : feedheader.parentElement.children[1]
+                Array.from(divfeed.children).map(check_garbage)
+            }
+            else console.log("[fb-getridad] failed to find a H3 with FeedHeader")
+        }
     }
 
     return true
