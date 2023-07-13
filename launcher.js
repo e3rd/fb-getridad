@@ -11,7 +11,7 @@ const LANG = {
         "People You May Know": "People You May Know",
         "Friend Requests": "Friend Requests",
         "Videos Just For You": "Reels and short videos",
-        "FeedHeader": "Feed of posts", // XX
+        "FeedHeader": "News Feed posts", // XX
     },
     "fr": {
         "Sponsored": "Sponsorisé",
@@ -33,7 +33,7 @@ const LANG = {
         "People You May Know": "Koho možná znáte",
         "Friend Requests": "Friend Requests", // XX
         "Videos Just For You": "Reely a krátká videa",
-        "FeedHeader": "Příspěvku v kanálu vybraných příspěvků",
+        "FeedHeader": "Příspěvky v kanálu vybraných příspěvků",
     }
 
 }
@@ -58,6 +58,9 @@ const is_garbage = n => {
         return true
     if (n.textContent.startsWith(lang["Sponsored · Paid for by"]))
         return true
+    if (n.tagName === "use" && n.hasAttribute("xlink:href")) {
+        return is_garbage(document.querySelector(n.getAttribute("xlink:href")))
+    }
     if (!n.children.length) {
         if ([lang["Suggested for you"],
         lang["Suggested live gaming broadcast"],
@@ -80,11 +83,10 @@ const is_garbage = n => {
     }
 
 
-    let topflexelements = Array.from(n.getElementsByTagName("SPAN")).filter((span) => {
-        return (span?.getAttribute("style")?.includes("display: flex"))
-    }).concat(Array.from(n.getElementsByTagName("DIV")).filter((div) => {
-        return (div?.getAttribute("style")?.includes("display: flex"))
-    }))
+    let topflexelements = Array.from(n.getElementsByTagName("SPAN"))
+        .filter(span => span?.getAttribute("style")?.includes("display: flex"))
+        .concat(Array.from(n.getElementsByTagName("DIV"))
+            .filter(div => div?.getAttribute("style")?.includes("display: flex")))
     for (let topflexelement of topflexelements) { // has a SPAN with style="display:flex"
         let letters = Array.from(topflexelement.childNodes).filter((div) => {
             return ((Number(window.getComputedStyle(div).getPropertyValue("order")) > 0)
@@ -160,14 +162,14 @@ function check_garbage(node) {
 const observer = new MutationObserver(records =>
     records.forEach(record =>
         Array.from(record.addedNodes)
+            .filter(node => node instanceof Element) // filter out text
             .filter(n => {
-                // XX sometimes hasAttribute or closest are not functions, catch
                 if (
-                    n?.hasAttribute("data-pagelet")
-                    || n?.parentElement?.tagName === "DIV" && n.parentElement.getAttribute("role") === "feed"
-                    || n?.parentElement?.children?.length > 0 && n.parentElement.children[0].tagName === "H3" && n.parentElement.children[0].textContent === lang["FeedHeader"]
-                    || n?.parentElement?.parentElement?.children?.length > 0 && n.parentElement.parentElement.children[0].tagName === "H3" && n.parentElement.parentElement.children[0].textContent === lang["FeedHeader"]
-                    || n?.closest("div[role=main]")) {
+                    n.hasAttribute("data-pagelet")
+                    || n.parentElement?.tagName === "DIV" && n.parentElement.getAttribute("role") === "feed"
+                    || n.parentElement?.children?.length > 0 && n.parentElement.children[0].tagName === "H3" && n.parentElement.children[0].textContent === lang["FeedHeader"]
+                    || n.parentElement?.parentElement?.children?.length > 0 && n.parentElement.parentElement.children[0].tagName === "H3" && n.parentElement.parentElement.children[0].textContent === lang["FeedHeader"]
+                    || n.closest("div[role=main]")) {
                     return true;
                 }
             }).map(check_garbage)))
@@ -214,7 +216,7 @@ function main() {
                 divfeed = (feedheader.parentElement.childElementCount > 2) ? feedheader.parentElement : feedheader.parentElement.children[1]
                 Array.from(divfeed.children).map(check_garbage)
             }
-            else console.log("[fb-getridad] failed to find a H3 with FeedHeader")
+            else console.log("[fb-getridad] failed to find a H3 with FeedHeader, cannot process initial posts.")
         }
     }
 

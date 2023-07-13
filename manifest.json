@@ -1,9 +1,5 @@
 {
-  "manifest_version": 2,
-  "content_security_policy": "script-src 'self'; object-src 'self'",
-  "permissions": [
-    "activeTab"
-  ],
+  "manifest_version": 3,
   "content_scripts": [
     {
       "js": [
@@ -15,7 +11,7 @@
       ]
     }
   ],
-  "version": "0.2.15",
+  "version": "0.2.16",
   "name": "fb-getridad",
   "description": "Release the wall from imposed content",
   "icons": {
