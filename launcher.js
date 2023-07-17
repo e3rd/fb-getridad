@@ -33,7 +33,7 @@ const LANG = {
         "People You May Know": "Koho možná znáte",
         "Friend Requests": "Friend Requests", // XX
         "Videos Just For You": "Reely a krátká videa",
-        "FeedHeader": "Příspěvky v kanálu vybraných příspěvků",
+        "FeedHeader": "Příspěvku v kanálu vybraných příspěvků", // really "Příspěvku", not "Příspěvky"
     }
 
 }

@@ -1,5 +1,10 @@
 {
   "manifest_version": 3,
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "fb-getridadd@edvard.cz"
+    }
+  },
   "content_scripts": [
     {
       "js": [
@@ -11,7 +16,7 @@
       ]
     }
   ],
-  "version": "0.2.16",
+  "version": "0.2.17",
   "name": "fb-getridad",
   "description": "Release the wall from imposed content",
   "icons": {
