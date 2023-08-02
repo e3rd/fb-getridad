@@ -54,8 +54,10 @@ const is_garbage = n => {
     // } else
     if (n.tagName === "B" && n.textContent.replaceAll("-", "") === lang["Sponsored"])  // "Sponsored"
         return true
-    if (n.textContent.startsWith(lang["Sponsored"]))
+    if (n.textContent.startsWith(lang["Sponsored"]) || n.textContent.startsWith(lang["Sponsored"].substr(1))) {
+        // xlink -> <use -> "S"> <use -> "ponsored">
         return true
+    }
     if (n.textContent.startsWith(lang["Sponsored · Paid for by"]))
         return true
     if (n.tagName === "use" && n.hasAttribute("xlink:href")) {
