@@ -8,6 +8,7 @@
   "content_scripts": [
     {
       "js": [
+        "jquery-3.7.1.min.js",
         "launcher.js"
       ],
       "run_at": "document_end",
@@ -16,7 +17,7 @@
       ]
     }
   ],
-  "version": "0.2.18",
+  "version": "0.2.19",
   "name": "fb-getridad",
   "description": "Release the wall from imposed content",
   "icons": {

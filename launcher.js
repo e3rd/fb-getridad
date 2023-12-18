@@ -52,8 +52,13 @@ const is_garbage = n => {
     //     )) {
     //     return true
     // } else
-    if (n.tagName === "B" && n.textContent.replaceAll("-", "") === lang["Sponsored"])  // "Sponsored"
+    const $n = $(n)
+    if (n.tagName === "SPAN" && $n.parents("h4").length && n.parentElement.getAttribute("role") === "button") { // blue Follow button
         return true
+    }
+    if (n.tagName === "B" && n.textContent.replaceAll("-", "") === lang["Sponsored"]) {// "Sponsored"
+        return true
+    }
     if (n.textContent.startsWith(lang["Sponsored"]) || n.textContent.startsWith(lang["Sponsored"].substr(1))) {
         // xlink -> <use -> "S"> <use -> "ponsored">
         return true
