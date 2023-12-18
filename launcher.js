@@ -5,6 +5,7 @@ const LANG = {
     "en": {
         "Sponsored": "Sponsored",
         "Sponsored · Paid for by": "Sponsored · Paid for by",
+        "Suggestions": "Suggestions",
         "Suggested for you": "Suggested for you",
         "Suggested groups": "Suggested groups",
         "Suggested live gaming broadcast": "Suggested live gaming broadcast", // XX not sure with the translation
@@ -16,6 +17,7 @@ const LANG = {
     "fr": {
         "Sponsored": "Sponsorisé",
         "Sponsored · Paid for by": "Sponsorisé · Financé par",
+        "Suggestions": "Suggestions",
         "Suggested for you": "Suggestion pour vous",
         "Suggested groups": "Suggested groups", // XX
         "Suggested live gaming broadcast": "Suggested live gaming broadcast", // XX translation wrong
@@ -27,6 +29,7 @@ const LANG = {
     "cs": {
         "Sponsored": "Sponzorováno",
         "Sponsored · Paid for by": "Sponzorováno · Platí",
+        "Suggestions": "Návrhy", // XX ?
         "Suggested for you": "Návrhy pro vás",
         "Suggested groups": "Navrhované skupiny", // XX ?
         "Suggested live gaming broadcast": "Navrhované živé herní vysílání",
@@ -61,6 +64,9 @@ const is_garbage = n => {
     }
     if (n.textContent.startsWith(lang["Sponsored"]) || n.textContent.startsWith(lang["Sponsored"].substr(1))) {
         // xlink -> <use -> "S"> <use -> "ponsored">
+        return true
+    }
+    if (n.textContent.startsWith(lang["Suggested"]) || n.textContent.startsWith(lang["Suggested"].substr(1))) {
         return true
     }
     if (n.textContent.startsWith(lang["Sponsored · Paid for by"]))
