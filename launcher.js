@@ -77,8 +77,8 @@ const is_garbage = n => {
         lang["Suggested groups"],
         lang["People You May Know"],
         lang["Friend Requests"],
-        lang["Videos Just For You"]],
-        lang["Suggested"]
+        lang["Videos Just For You"],
+        lang["Suggested"]]
             .includes(n.textContent)) {
             return true
         } else if (n.tagName === "SPAN" && n.textContent === lang["Sponsored"][0]) {
