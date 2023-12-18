@@ -66,9 +66,6 @@ const is_garbage = n => {
         // xlink -> <use -> "S"> <use -> "ponsored">
         return true
     }
-    if (n.textContent.startsWith(lang["Suggested"]) || n.textContent.startsWith(lang["Suggested"].substr(1))) {
-        return true
-    }
     if (n.textContent.startsWith(lang["Sponsored · Paid for by"]))
         return true
     if (n.tagName === "use" && n.hasAttribute("xlink:href")) {
@@ -80,7 +77,8 @@ const is_garbage = n => {
         lang["Suggested groups"],
         lang["People You May Know"],
         lang["Friend Requests"],
-        lang["Videos Just For You"]]
+        lang["Videos Just For You"]],
+        lang["Suggested"]
             .includes(n.textContent)) {
             return true
         } else if (n.tagName === "SPAN" && n.textContent === lang["Sponsored"][0]) {
