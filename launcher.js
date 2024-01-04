@@ -40,13 +40,13 @@ const LANG = {
     }
 
 }
-const debug = false
+const debug = new URLSearchParams(window.location.search).get("debug") === "extension"
 let lang = null
 
 /**
  * Check if the given node should be removed
  * @param n
- * @return {boolean}
+ * @return {boolean|int} The id of matching case or false.
  */
 const is_garbage = n => {
     // if (n.tagName === "SPAN" && n.style.top === '3em' &&
@@ -57,17 +57,18 @@ const is_garbage = n => {
     // } else
     const $n = $(n)
     if (n.tagName === "SPAN" && $n.parents("h4").length && n.parentElement.getAttribute("role") === "button") { // blue Follow button
-        return true
+        return 100
     }
     if (n.tagName === "B" && n.textContent.replaceAll("-", "") === lang["Sponsored"]) {// "Sponsored"
-        return true
+        return 101
     }
     if (n.textContent.startsWith(lang["Sponsored"]) || n.textContent.startsWith(lang["Sponsored"].substr(1))) {
         // xlink -> <use -> "S"> <use -> "ponsored">
-        return true
+        return 102
     }
-    if (n.textContent.startsWith(lang["Sponsored · Paid for by"]))
-        return true
+    if (n.textContent.startsWith(lang["Sponsored · Paid for by"])) {
+        return 103
+    }
     if (n.tagName === "use" && n.hasAttribute("xlink:href")) {
         return is_garbage(document.querySelector(n.getAttribute("xlink:href")))
     }
@@ -80,7 +81,7 @@ const is_garbage = n => {
         lang["Videos Just For You"],
         lang["Suggested"]]
             .includes(n.textContent)) {
-            return true
+            return 104
         } else if (n.tagName === "SPAN" && n.textContent === lang["Sponsored"][0]) {
             let siblings = Array.from(n.parentElement.childNodes)
                 .filter(n => n.style === undefined || n.style.top !== '3em' && n.style.display !== 'none')
@@ -88,7 +89,7 @@ const is_garbage = n => {
             return Array.from(lang["Sponsored"]).every(ch => {
                 const i = siblings.indexOf(ch);
                 siblings = siblings.slice(i);
-                return i > -1
+                return i > -1 ? 105 : false
             })
         }
     }
@@ -102,7 +103,7 @@ const is_garbage = n => {
         let letters = Array.from(topflexelement.childNodes).filter((div) => {
             return ((Number(window.getComputedStyle(div).getPropertyValue("order")) > 0)
                 && ((Number(window.getComputedStyle(div).getPropertyValue("top").replace("px", "")) < 1))
-                && (window.getComputedStyle(div).getPropertyValue("display") === "block"));
+                && (window.getComputedStyle(div).getPropertyValue("display") === "block")) ? 106 : false
             //return div.computedStyleMap().get("top").value === "auto" && div.computedStyleMap().get("display").value !== "none";
         });
 
@@ -119,7 +120,7 @@ const is_garbage = n => {
         let result = "";
         for (let i = 0; i <= maxorder; i++) {
             const currletter = letters.find((letter) => {
-                return window.getComputedStyle(letter).getPropertyValue("order") == i;
+                return window.getComputedStyle(letter).getPropertyValue("order") == i ? 107 : false
             })
             if (currletter) {
                 result += currletter.textContent[0]
@@ -127,22 +128,24 @@ const is_garbage = n => {
         }
 
         if (result === lang["Sponsored"]) {
-            return true
+            return 108
         }
     }
 
     if (n.tagName == "use" && n.openOrClosedShadowRoot)  // only supported in Firefox
     {
-        let sr = n.openOrClosedShadowRoot
-        if (sr.children.length > 0) {
-            if (is_garbage(sr.children[0])) return true;
+        const sr = n.openOrClosedShadowRoot
+        let r
+        if (sr.children.length > 0 && (r = is_garbage(sr.children[0]))) {
+            return r
         }
     }
 
 
     for (const sub_node of n.children) {
-        if (is_garbage(sub_node)) {
-            return true
+        const r = is_garbage(sub_node)
+        if (r) {
+            return r
         }
     }
     return false
@@ -155,7 +158,11 @@ const is_garbage = n => {
 function check_garbage(node) {
     const is = is_garbage(node)
     if (debug) {
-        console.log('[fb-getridad] Checking: ', node, is);
+        if (is) {
+            console.info(`[fb-getridad] Match ${is}: `, node)
+        } else {
+            console.debug('[fb-getridad] Pass: ', node)
+        }
     }
     if (is) {
         const n = node.tagName === "DIV" ? node : node.children[0]

@@ -12,3 +12,7 @@ Or use the development version:
 * Menu / More Tools / Extensions
 * Toggle Developer mode in the upper corner
 * Load unpacked / search for the downloaded folder
+
+# Debug mode
+
+Activate by appending an URL parameter: `?debug=extension`. Then, in the developer console, you see all matched elements along with the reason for being matched. (In verbose console, it outputs the non-matched elements too.)
