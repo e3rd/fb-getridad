@@ -13,11 +13,12 @@
       ],
       "run_at": "document_end",
       "matches": [
+        "http://*.facebook.com/*",
         "https://*.facebook.com/*"
       ]
     }
   ],
-  "version": "0.3.0",
+  "version": "0.3.1",
   "name": "fb-getridad",
   "description": "Release the wall from imposed content",
   "icons": {

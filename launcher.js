@@ -41,28 +41,26 @@ const LANG = {
 
 }
 const debug = new URLSearchParams(window.location.search).get("debug") === "extension"
-let lang = null
+let lang = LANG["en"]
 
 /**
  * Check if the given node should be removed
  * @param n
  * @return {boolean|int} The id of matching case or false.
  */
-const is_garbage = n => {
-    // if (n.tagName === "SPAN" && n.style.top === '3em' &&
-    //     (Array.from(n.parentElement.querySelectorAll('span')).filter(s => s.style.top !== '3em' && s.style.display !== 'none').map(s => s.textContent).join("").includes(lang["Sponsored"].slice(1))
-    //     //    || n.textContent.length === 1 && n.nextElementSibling.textContent.length === 1
-    //     )) {
-    //     return true
-    // } else
+function is_garbage(n) {
     const $n = $(n)
+    if($n === undefined) {
+        console.error("$n is undefined", n, $)
+        console.trace()
+    }
     if (n.tagName === "SPAN" && $n.parents("h4").length && n.parentElement.getAttribute("role") === "button") { // blue Follow button
         return 100
     }
     if (n.tagName === "B" && n.textContent.replaceAll("-", "") === lang["Sponsored"]) {// "Sponsored"
         return 101
     }
-    if (n.textContent.startsWith(lang["Sponsored"]) || n.textContent.startsWith(lang["Sponsored"].substr(1))) {
+    if (n.textContent.startsWith(lang["Sponsored"]) || n.textContent.startsWith(lang["Sponsored"].substring(1))) {
         // xlink -> <use -> "S"> <use -> "ponsored">
         return 102
     }
@@ -237,7 +235,6 @@ function main() {
             else console.log("[fb-getridad] failed to find a H3 with FeedHeader, cannot process initial posts.")
         }
     }
-
     return true
 }
 
